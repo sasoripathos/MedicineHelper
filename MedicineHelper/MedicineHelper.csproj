@@ -7,8 +7,8 @@
     <ProjectGuid>{63C00258-D4DA-424C-ADF0-88286CC8B6DB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ArthitisAndMeApp</RootNamespace>
-    <AssemblyName>ArthitisAndMeApp</AssemblyName>
+    <RootNamespace>MedicineHelper</RootNamespace>
+    <AssemblyName>MedicineHelper</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
