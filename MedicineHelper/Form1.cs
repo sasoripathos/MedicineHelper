@@ -13,16 +13,19 @@ namespace MedicineHelper
 {
     public partial class Form1 : Form
     {
-        static SpeechImpl input;
+        static SpeechBot input;
 
         public Form1()
         {
             InitializeComponent();
+            //------test form-----
+            //Form2 instance = new Form2();
+            //instance.ShowDialog();
+            //-----------------------
 
-
-            input = new SpeechImpl();
-            input.responseHandler += callBack;
-            input.voice2text(this);
+            input = new SpeechBotImpl();
+            input.textReached += callBack;
+            input.voiceToText(this);
         }
 
         public void changeText (string str)
@@ -252,16 +255,16 @@ namespace MedicineHelper
 
             }
 
-            input = new SpeechImpl();
-            input.text2voice(response);
+            input = new SpeechBotImpl();
+            input.textToVoice(response);
             form.changeText(response); // CHANGE TEXT DEPENDING ON RESPONSE
             form.displayPanel(state); // CHANGE PANEL DEPENDING ON RESPONSE
             if (repeat == true)
             {
                 Console.Write("repeat");
-                input = new SpeechImpl();
-                input.responseHandler += callBack;
-                input.voice2text(form);
+                input = new SpeechBotImpl();
+                input.textReached += callBack;
+                input.voiceToText(form);
             }
 
 

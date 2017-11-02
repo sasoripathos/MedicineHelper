@@ -11,43 +11,35 @@ using System.Threading;
 
 namespace MedicineHelper
 {
-    class SpeechImpl : ISpeech
+    class SpeechBotImpl : SpeechBot
     {
-        private string key = "d6acdfd441d4dec9cb5f130c07e876e";
+        private string key = "ed6acdfd441d4dec9cb5f130c07e876e";
         private MicrophoneRecognitionClient client;
         private string requestUri = "https://speech.platform.bing.com/synthesize";
         private Form1 form;
 
-        public event CallbackEventHandler responseHandler;
-        public delegate void CallbackEventHandler(Form1 form, List<String> function);
-
-        public SpeechImpl() {
-        }
+        //public event textReceiveEventHandler textReached;
+        //public delegate void textReceiveEventHandler(Form1 form, List<String> function);
 
         private static void PlayAudio(object sender, GenericEventArgs<Stream> args)
         {
-            //Console.WriteLine(args.EventData);
-
-            // For SoundPlayer to be able to play the wav file, it has to be encoded in PCM.
-            // Use output audio format AudioOutputFormat.Riff16Khz16BitMonoPcm to do that.
             SoundPlayer player = new SoundPlayer(args.EventData);
             player.PlaySync();
             args.EventData.Dispose();
         }
 
-        public void text2voice(string text)
+        public override void textToVoice(string text)
         {
             string access;
             Authentication auth = new Authentication(this.key);
             try
             {
                 access = auth.GetAccessToken();
-                //Console.WriteLine("Token: {0}\n", access);
             }
             catch (Exception ex)
             {
                 //Console.WriteLine("Failed authentication.");
-                //Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.ToString());
                 //Console.WriteLine(ex.Message);
                 return;
             }
@@ -78,7 +70,7 @@ namespace MedicineHelper
             }).Wait();
         }
 
-        public string voice2text(Form1 form)
+        public override string voiceToText(Form1 form)
         {
             this.createClient();
             this.form = form;
@@ -86,13 +78,18 @@ namespace MedicineHelper
             return "";
         }
 
+        /// <summary>
+        /// Create a microphone client to record voice and send voice to server.
+        /// </summary>
         private void createClient()
         {
+            //Useing API Factory to create a microphone client
             this.client = SpeechRecognitionServiceFactory.CreateMicrophoneClient(
                 SpeechRecognitionMode.ShortPhrase,
                 "en-US",
                 this.key);
             this.client.OnResponseReceived += this.respondListener; 
+            // start record voice and translate
             this.client.StartMicAndRecognition();
         }
 
@@ -103,19 +100,19 @@ namespace MedicineHelper
             int length = e.PhraseResponse.Results.Length;
             if (length == 0)
             {
-                //Console.WriteLine("nothing");
+                texts.Add("NONE");
             }
             else
             {
                 for (int i = 0; i < length; i++)
                 {
                     texts.Add(e.PhraseResponse.Results[i].DisplayText);
-                    //Console.WriteLine(string.Format("{0}, {1}", e.PhraseResponse.Results[i].Confidence, e.PhraseResponse.Results[i].DisplayText));
                 }
                 
-                if (this.responseHandler != null)
+                if (!this.isEventNull())
                 {
-                    this.responseHandler(form, texts);
+                    //this.textReached(form, texts);
+                    this.raiseTextReached(form, texts);
                 }
 
             }
