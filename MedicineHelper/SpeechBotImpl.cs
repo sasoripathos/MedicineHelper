@@ -13,13 +13,21 @@ namespace MedicineHelper
 {
     class SpeechBotImpl : SpeechBot
     {
+        /// <summary>
+        ///  the key for Bing Speech API
+        /// </summary>
         private string key = "ed6acdfd441d4dec9cb5f130c07e876e";
+        
+        /// <summary>
+        /// the microphone client
+        /// </summary>
         private MicrophoneRecognitionClient client;
+
+        /// <summary>
+        /// the uri for the text to speech REST API
+        /// </summary>
         private string requestUri = "https://speech.platform.bing.com/synthesize";
         private Form1 form;
-
-        //public event textReceiveEventHandler textReached;
-        //public delegate void textReceiveEventHandler(Form1 form, List<String> function);
 
         private static void PlayAudio(object sender, GenericEventArgs<Stream> args)
         {
@@ -70,12 +78,13 @@ namespace MedicineHelper
             }).Wait();
         }
 
-        public override string voiceToText(Form1 form)
+        /// <summary>
+        /// <see cref="MedicineHelper:SpeechBot.voiceToText(Form1 form)"/>
+        /// </summary>
+        public override void voiceToText(Form1 form)
         {
             this.createClient();
             this.form = form;
-
-            return "";
         }
 
         /// <summary>
@@ -88,18 +97,25 @@ namespace MedicineHelper
                 SpeechRecognitionMode.ShortPhrase,
                 "en-US",
                 this.key);
+            //Load event handler
             this.client.OnResponseReceived += this.respondListener; 
             // start record voice and translate
             this.client.StartMicAndRecognition();
         }
 
+        /// <summary>
+        /// The handler for OnResponseReceived event in MicrophoneRecognitionClient class.
+        /// </summary>
+        /// <param name="sender"> the sender of the event </param>
+        /// <param name="e"> the EventArgs</param>
         private void respondListener(object sender, SpeechResponseEventArgs e)
         {
+            // Initialize the list for all possible responses
             List<String> texts = new List<String>();
-
+            // Get all responses
             int length = e.PhraseResponse.Results.Length;
-            if (length == 0)
-            {
+            if (length == 0) // if no response, add a "NONE" to indicate the empty
+            { 
                 texts.Add("NONE");
             }
             else
@@ -108,16 +124,11 @@ namespace MedicineHelper
                 {
                     texts.Add(e.PhraseResponse.Results[i].DisplayText);
                 }
-                
-                if (!this.isEventNull())
-                {
-                    //this.textReached(form, texts);
-                    this.raiseTextReached(form, texts);
-                }
-
+                // raise the textReached event
+                this.raiseTextReached(form, texts);
             }
+            // stop record voice and translate
             this.client.EndMicAndRecognition();
-            //this.client.StartMicAndRecognition();
         }
     }
 }
