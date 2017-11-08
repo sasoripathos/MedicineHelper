@@ -143,7 +143,9 @@ namespace MedicineHelper
                     texts.Add(e.PhraseResponse.Results[i].DisplayText);
                 }
                 // raise the textReached event
-                this.raiseTextReached(form, texts);
+                TextReceiveEventArgs textArgs = new TextReceiveEventArgs();
+                textArgs.textList = texts;
+                this.raiseTextReached(this, textArgs);
             }
             // stop record voice and translate
             this.client.EndMicAndRecognition();

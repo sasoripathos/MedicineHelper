@@ -86,8 +86,10 @@ namespace MedicineHelper
         }
 
         static int state = 6; // HOME STATE
-        public static void callBack(Form1 form, List<string> list)
+        public void callBack(object sender, TextReceiveEventArgs textArgs)
         {
+            Form1 form = this;
+            List<string> list = textArgs.textList;
             string text = list[0];
             
             List<string> keywordInfo = new List<string> { "ye", "thank", "done", "jesse", "tell", "medication", "alert", "schedule", "list", "when", "buy", "about", "taking" };

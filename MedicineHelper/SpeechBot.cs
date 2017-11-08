@@ -36,7 +36,8 @@ namespace MedicineHelper
         /// </summary>
         /// <param name="form"> the form which the response will be displayed </param>
         /// <param name="function"> the list of all possible responses got from API server </param>
-        public delegate void textReceiveEventHandler(Form1 form, List<String> function);
+        //public delegate void textReceiveEventHandler(Form1 form, List<String> function);
+        public delegate void textReceiveEventHandler(object sender, TextReceiveEventArgs textArgs);
 
         /// <summary>
         /// Given a string standing for an English sentence/phrase, get the speech/audio of that sentence/phrase.
@@ -63,8 +64,12 @@ namespace MedicineHelper
         /// </summary>
         /// <param name="theForm"> the form which the response will be displayed </param>
         /// <param name="texts"> the list of all possible responses got from API server </param>
-        protected void raiseTextReached(Form1 theForm, List<String> texts) {
+        /*protected void raiseTextReached(Form1 theForm, List<String> texts) {
             if (textReached != null) textReached(theForm, texts);
+        }*/
+        protected void raiseTextReached(object sender, TextReceiveEventArgs textArgs)
+        {
+            if (textReached != null) textReached(sender, textArgs);
         }
     }
 }
