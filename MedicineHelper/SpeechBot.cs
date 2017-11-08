@@ -34,9 +34,8 @@ namespace MedicineHelper
         /// <summary>
         /// The handler for textReached event.
         /// </summary>
-        /// <param name="form"> the form which the response will be displayed </param>
-        /// <param name="function"> the list of all possible responses got from API server </param>
-        //public delegate void textReceiveEventHandler(Form1 form, List<String> function);
+        /// <param name="sender"> the source which raise the textReached event </param>
+        /// <param name="textArgs"> the textReached event arguments, including the list of text</param>
         public delegate void textReceiveEventHandler(object sender, TextReceiveEventArgs textArgs);
 
         /// <summary>
@@ -48,8 +47,7 @@ namespace MedicineHelper
         /// <summary>
         /// Receive an audio (in English) from microphone and turn it to English text.
         /// </summary>
-        /// <param name="form"> the form which the response will be displayed </param>
-        public abstract void voiceToText(Form1 form);
+        public abstract void voiceToText();
 
         /*/// <summary>
         /// Check whether the textReached event is null.

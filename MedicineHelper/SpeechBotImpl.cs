@@ -45,7 +45,20 @@ namespace MedicineHelper
         /// the uri for the text to speech REST API
         /// </summary>
         private string requestUri = "https://speech.platform.bing.com/synthesize";
-        private Form1 form;
+
+        /// <summary>
+        /// Create a microphone client for SpeechBot
+        /// </summary>
+        public SpeechBotImpl() {
+            //this.createClient();
+            //Useing API Factory to create a microphone client
+            this.client = SpeechRecognitionServiceFactory.CreateMicrophoneClient(
+                SpeechRecognitionMode.ShortPhrase,
+                "en-US",
+                this.key);
+            //Load event handler
+            this.client.OnResponseReceived += this.respondListener;
+        }
 
         private static void PlayAudio(object sender, GenericEventArgs<Stream> args)
         {
@@ -99,24 +112,8 @@ namespace MedicineHelper
         /// <summary>
         /// <see cref="MedicineHelper:SpeechBot.voiceToText(Form1 form)"/>
         /// </summary>
-        public override void voiceToText(Form1 form)
+        public override void voiceToText()
         {
-            this.createClient();
-            this.form = form;
-        }
-
-        /// <summary>
-        /// Create a microphone client to record voice and send voice to server.
-        /// </summary>
-        private void createClient()
-        {
-            //Useing API Factory to create a microphone client
-            this.client = SpeechRecognitionServiceFactory.CreateMicrophoneClient(
-                SpeechRecognitionMode.ShortPhrase,
-                "en-US",
-                this.key);
-            //Load event handler
-            this.client.OnResponseReceived += this.respondListener; 
             // start record voice and translate
             this.client.StartMicAndRecognition();
         }

@@ -42,7 +42,7 @@ namespace MedicineHelper
 
             input = new SpeechBotImpl();
             input.textReached += callBack;
-            input.voiceToText(this);
+            input.voiceToText();
         }
 
         public void changeText (string str)
@@ -283,7 +283,7 @@ namespace MedicineHelper
                 Console.Write("repeat");
                 input = new SpeechBotImpl();
                 input.textReached += callBack;
-                input.voiceToText(form);
+                input.voiceToText();
             }
 
 
