@@ -24,8 +24,9 @@ using System.Threading.Tasks;
 
 namespace MedicineHelper
 {
-    public class TextReceiveEventArgs : EventArgs
+    interface VoiceControlAgent
     {
-        public List<String> textList { get; set; }
+        void work();
+        //VoiceControlAgent getInstance();
     }
 }

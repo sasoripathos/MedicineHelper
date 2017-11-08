@@ -46,10 +46,17 @@ namespace MedicineHelper
         /// </summary>
         private string requestUri = "https://speech.platform.bing.com/synthesize";
 
+        private static SpeechBot botInstance=null;
+
+        public static SpeechBot getInstance() {
+            if (botInstance == null) botInstance = new SpeechBotImpl();
+            return botInstance;
+        }
+
         /// <summary>
         /// Create a microphone client for SpeechBot
         /// </summary>
-        public SpeechBotImpl() {
+        private SpeechBotImpl() {
             //this.createClient();
             //Useing API Factory to create a microphone client
             this.client = SpeechRecognitionServiceFactory.CreateMicrophoneClient(

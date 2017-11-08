@@ -1,4 +1,4 @@
-﻿// Copyright Zhili (Jerry) Pan, October 2017
+﻿// Copyright Zhili (Jerry) Pan, November 2017
 // Distributed under the terms of the GNU General Public License.
 //
 // This file is part of MedicineHelper.
@@ -18,85 +18,49 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace MedicineHelper
 {
-    public partial class Form1 : Form
+    class Nancy : VoiceControlAgent
     {
-        static SpeechBot input;
+        private static VoiceControlAgent nancyInstance;
+        private Form1 form;
+        private SpeechBot speechBot = SpeechBotImpl.getInstance();
 
-        public Form1()
-        {
-            InitializeComponent();
-            //------test form-----
-            //Form2 instance = new Form2();
-            //instance.ShowDialog();
-            //-----------------------
-            VoiceControlAgent nancy = Nancy.getInstance(this);
-            nancy.work();
-            //input = SpeechBotImpl.getInstance();
-            //input.textReached += callBack;
-            //input.voiceToText();
+        /*private void setForm(Form1 form) {
+            this.form = form;
+        }*/
+
+        private Nancy(Form1 form) {
+            this.form = form;
         }
 
-       public void changeText (string str)
+        public static VoiceControlAgent getInstance(Form1 form)
         {
-            if (this.responseTxt.InvokeRequired)
-            {
-                this.responseTxt.BeginInvoke((MethodInvoker)delegate () { this.responseTxt.Text = str;  });
-            }
-            else
-            {
-                this.responseTxt.Text = str;
-            }
+            if (nancyInstance == null) { nancyInstance = new Nancy(form); }
+            return nancyInstance;
         }
 
-        public void displayPanel(int panelIndex)
+        public void work()
         {
-            for (int i = 1; i <= 6; i++)
-            {
-                if (this.responseTxt.InvokeRequired)
-                {
-                    this.delegateDisplayPanel(i, panelIndex);
-                }
-                else
-                {
-                    string panelID = String.Concat("panel", i);
-                    Panel ctr = (Panel)this.Controls[panelID];
-
-                    ctr.Visible = i == panelIndex;
-                }
-            }
+            speechBot.textReached += commandAnalyze;
+            speechBot.voiceToText();
         }
 
-        public void delegateDisplayPanel(int i, int panelIndex)
+        public void commandAnalyze(object sender, TextReceiveEventArgs textArgs)
         {
-            this.BeginInvoke((MethodInvoker)delegate () {
-                string panelID = "panel" + i;
-                Panel ctr = (Panel)this.Controls[panelID];
-
-                ctr.Visible = i == panelIndex;
-            });
-        }
-
-        static int state = 6; // HOME STATE
-        public void callBack(object sender, TextReceiveEventArgs textArgs)
-        {
-            Form1 form = this;
+            int state = 6;
+            Form1 form = this.form;
             List<string> list = textArgs.textList;
             string text = list[0];
-            
+
             List<string> keywordInfo = new List<string> { "ye", "thank", "done", "jesse", "tell", "medication", "alert", "schedule", "list", "when", "buy", "about", "taking" };
             List<string> keywordAlert = new List<string> { "thank", "jesse", "ye", "ok", "next", "no", "not", "cancel", "confirming", "finished" };
-            List<string> keywordMeds = new List<string> { "medication", "jesse", "ok", "ye", "no", "not", "taking", "took", "confirming", "finished", "thank"};
-            List<string> keywordCheckIn = new List<string> {"jesse", "thank", "ye", "no", "ok", "not", "good"};
+            List<string> keywordMeds = new List<string> { "medication", "jesse", "ok", "ye", "no", "not", "taking", "took", "confirming", "finished", "thank" };
+            List<string> keywordCheckIn = new List<string> { "jesse", "thank", "ye", "no", "ok", "not", "good" };
             bool repeat = true;
 
             List<string> output = new List<string>();
@@ -105,7 +69,7 @@ namespace MedicineHelper
             if (state == 6) // HOME STATE
             {
                 output = Parse(keywordInfo, text);
-                if (((output.Contains("tell") && output.Contains("about"))|| output.Contains("taking") || output.Contains("list")) && output.Contains("medication"))
+                if (((output.Contains("tell") && output.Contains("about")) || output.Contains("taking") || output.Contains("list")) && output.Contains("medication"))
                 {
                     response = "These are the meds you need to take.";
                     state = 1; // MED STATE
@@ -138,7 +102,7 @@ namespace MedicineHelper
                 {
                     response = "Your Sulfasalizine will expire in 23 days.                       Would you like to send a refill order to a pharmacy?";
                 }
-                
+
                 else
                 {
                     response = "Sorry, can you repeat yourself?";
@@ -146,7 +110,7 @@ namespace MedicineHelper
 
             }
 
-            else if(state == 1 || state == 4) // MED STATE or Cancel Alert State
+            else if (state == 1 || state == 4) // MED STATE or Cancel Alert State
             {
                 output = Parse(keywordMeds, text);
                 if (output.Contains("confirming") || output.Contains("finished"))
@@ -163,12 +127,12 @@ namespace MedicineHelper
                 {
                     response = "Ok, anything else?";
                     state = 6;
-                    
+
                 }
                 else if (output.Contains("jesse"))
                 {
                     response = "Hello Art, how can I help you?";
-                }             
+                }
                 else
                 {
                     response = "Sorry, can you repeat yourself?";
@@ -177,9 +141,9 @@ namespace MedicineHelper
             else if (state == 2) // HOW ARE YOU STATE
             {
                 output = Parse(keywordCheckIn, text);
-                 if (output.Contains("no") || output.Contains("not"))
+                if (output.Contains("no") || output.Contains("not"))
                 {
-                    response = "Can you tell me about it?"; 
+                    response = "Can you tell me about it?";
                     state = 3; // TELL ME ABOUT IT STATE
                 }
                 else if (output.Contains("ok") || output.Contains("ye") || output.Contains("good"))
@@ -191,13 +155,13 @@ namespace MedicineHelper
                 {
                     response = "Ok, anything else?";
                     state = 6;
-                    
+
                 }
                 else if (output.Contains("jesse"))
                 {
                     response = "Hello Art, how can I help you?";
                 }
-                
+
                 else
                 {
                     response = "Sorry, can you repeat yourself?";
@@ -222,13 +186,13 @@ namespace MedicineHelper
                 {
                     response = "Ok, anything else?";
                     state = 6;
-                    
+
                 }
                 else if (output.Contains("jesse"))
                 {
                     response = "Hello Art, how can I help you?";
                 }
-                
+
                 else
                 {
                     response = "Sorry, can you repeat yourself?";
@@ -242,7 +206,7 @@ namespace MedicineHelper
                 if (output.Contains("not") || output.Contains("no"))
                 {
                     response = "Alert! You have an alert for Methotrexate from Friday.";
-                    
+
                 }
 
                 else if (output.Contains("ye") || output.Contains("ok"))
@@ -262,12 +226,12 @@ namespace MedicineHelper
                     response = "OK, the alert for your medication has been canceled.";
                     state = 4; // CANCEL ALERT STATE
                 }
-    
+
                 else if (output.Contains("jesse"))
                 {
                     response = "Hello Art, how can I help you?";
                 }
-                
+
                 else
                 {
                     response = "Sorry, can you repeat yourself?";
@@ -275,19 +239,25 @@ namespace MedicineHelper
 
             }
 
-            //input = new SpeechBotImpl();
+            /*input = new SpeechBotImpl();
             input.textToVoice(response);
             form.changeText(response); // CHANGE TEXT DEPENDING ON RESPONSE
             form.displayPanel(state); // CHANGE PANEL DEPENDING ON RESPONSE
             if (repeat == true)
             {
                 Console.Write("repeat");
-                //input = new SpeechBotImpl();
+                input = new SpeechBotImpl();
                 input.textReached += callBack;
                 input.voiceToText();
+            }*/
+
+            speechBot.textToVoice(response);
+            form.changeText(response);
+            form.displayPanel(state);
+            if (repeat == true)
+            {
+                this.work();
             }
-
-
 
             Console.Write(response);
         }
@@ -304,7 +274,7 @@ namespace MedicineHelper
             {
                 if (response[i].EndsWith("s"))
                 {
-                    response[i] = response[i].Substring(0, response[i].Length-1);
+                    response[i] = response[i].Substring(0, response[i].Length - 1);
                 }
             }
             List<string> output = new List<string>();
@@ -319,6 +289,5 @@ namespace MedicineHelper
             }
             return output;
         }
-
     }
 }
