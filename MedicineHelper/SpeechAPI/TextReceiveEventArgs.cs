@@ -22,7 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicineHelper
+namespace MedicineHelper.SpeechAPI
 {
     public class TextReceiveEventArgs : EventArgs
     {

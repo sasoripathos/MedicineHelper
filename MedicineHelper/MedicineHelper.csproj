@@ -98,14 +98,14 @@
     <Compile Include="Form2.Designer.cs">
       <DependentUpon>Form2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Nancy.cs" />
+    <Compile Include="VoiceController\Nancy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SpeechBot.cs" />
-    <Compile Include="SpeechBotImpl.cs" />
-    <Compile Include="TextReceiveEventArgs.cs" />
-    <Compile Include="TTSClient.cs" />
-    <Compile Include="VoiceControlAgent.cs" />
+    <Compile Include="SpeechAPI\SpeechBot.cs" />
+    <Compile Include="SpeechAPI\SpeechBotImpl.cs" />
+    <Compile Include="SpeechAPI\TextReceiveEventArgs.cs" />
+    <Compile Include="SpeechAPI\TTSClient.cs" />
+    <Compile Include="VoiceController\VoiceControlAgent.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

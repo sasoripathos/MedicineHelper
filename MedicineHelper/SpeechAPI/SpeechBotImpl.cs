@@ -27,7 +27,7 @@ using CognitiveServicesTTS;
 using System.Media;
 using System.Threading;
 
-namespace MedicineHelper
+namespace MedicineHelper.SpeechAPI
 {
     class SpeechBotImpl : SpeechBot
     {

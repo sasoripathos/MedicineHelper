@@ -25,6 +25,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MedicineHelper.VoiceController;
+using MedicineHelper.SpeechAPI;
 
 namespace MedicineHelper
 {

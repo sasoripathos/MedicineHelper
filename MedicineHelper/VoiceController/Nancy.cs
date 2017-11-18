@@ -21,8 +21,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MedicineHelper.SpeechAPI;
 
-namespace MedicineHelper
+namespace MedicineHelper.VoiceController
 {
     class Nancy : VoiceControlAgent
     {
