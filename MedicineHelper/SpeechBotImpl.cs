@@ -1,4 +1,4 @@
-﻿// Copyright Zhili (Jerry) Pan, October 2017
+﻿// Copyright Zhili (Jerry) Pan, November 2017
 // Distributed under the terms of the GNU General Public License.
 //
 // This file is part of MedicineHelper.
@@ -32,48 +32,63 @@ namespace MedicineHelper
     class SpeechBotImpl : SpeechBot
     {
         /// <summary>
-        ///  the key for Bing Speech API
+        /// The key for Bing Speech API
         /// </summary>
-        private string key = "ed6acdfd441d4dec9cb5f130c07e876e";
+        private string key = "4d7a7bba7e6944028d26db96bf51b0db";
         
         /// <summary>
-        /// the microphone client
+        /// The microphone client
         /// </summary>
         private MicrophoneRecognitionClient client;
 
         /// <summary>
-        /// the uri for the text to speech REST API
+        /// The URL for the text to speech REST API
         /// </summary>
         private string requestUri = "https://speech.platform.bing.com/synthesize";
 
-        private static SpeechBot botInstance=null;
+        /// <summary>
+        /// A instance of SpeechBot (SpeechBotImpl)
+        /// </summary>
+        private static SpeechBot botInstance = new SpeechBotImpl();
 
+        /// <summary>
+        /// Return an instance of SpeechBot.
+        /// </summary>
+        /// <returns> an instance of SpeechBot </returns>
         public static SpeechBot getInstance() {
-            if (botInstance == null) botInstance = new SpeechBotImpl();
             return botInstance;
         }
 
         /// <summary>
-        /// Create a microphone client for SpeechBot
+        /// Create a singleton instance of SpeechBot.
         /// </summary>
         private SpeechBotImpl() {
-            //this.createClient();
-            //Useing API Factory to create a microphone client
+            // Create a microphone client for this instance of SpeechBotImpl
+            // Using API Factory to create a microphone client
             this.client = SpeechRecognitionServiceFactory.CreateMicrophoneClient(
                 SpeechRecognitionMode.ShortPhrase,
                 "en-US",
                 this.key);
-            //Load event handler
+            // Load event handler
             this.client.OnResponseReceived += this.respondListener;
         }
 
-        private static void PlayAudio(object sender, GenericEventArgs<Stream> args)
+        /// <summary>
+        /// When receiving an OnAudioAvailable event, play the audio included in this event.
+        /// </summary>
+        /// <param name="sender"> the sender of the OnAudioAvailable event</param>
+        /// <param name="args"> the event arguments of this OnAudioAvailable event </param>
+        private void PlayAudio(object sender, GenericEventArgs<Stream> args)
         {
             SoundPlayer player = new SoundPlayer(args.EventData);
             player.PlaySync();
             args.EventData.Dispose();
         }
 
+        /// <summary>
+        /// Given a text response, translate it to audio.
+        /// </summary>
+        /// <param name="text"> the given text response </param>
         public override void textToVoice(string text)
         {
             string access;
@@ -134,6 +149,9 @@ namespace MedicineHelper
         {
             // Initialize the list for all possible responses
             List<String> texts = new List<String>();
+            // stop record voice and translate, this statement should be put here, otherwise the
+            // repeat recording will fail
+            this.client.EndMicAndRecognition();
             // Get all responses
             int length = e.PhraseResponse.Results.Length;
             if (length == 0) // if no response, add a "NONE" to indicate the empty
@@ -151,8 +169,6 @@ namespace MedicineHelper
                 textArgs.textList = texts;
                 this.raiseTextReached(this, textArgs);
             }
-            // stop record voice and translate
-            this.client.EndMicAndRecognition();
         }
     }
 }

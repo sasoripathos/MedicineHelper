@@ -26,7 +26,9 @@ namespace MedicineHelper
 {
     interface VoiceControlAgent
     {
+        /// <summary>
+        /// Start recording voice command and provide response.
+        /// </summary>
         void work();
-        //VoiceControlAgent getInstance();
     }
 }

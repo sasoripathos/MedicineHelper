@@ -26,30 +26,61 @@ namespace MedicineHelper
 {
     class Nancy : VoiceControlAgent
     {
+        /// <summary>
+        /// A singleton instance of Nancy.
+        /// </summary>
         private static VoiceControlAgent nancyInstance;
+
+        /// <summary>
+        /// The form which this instance of Nancy will interact with.
+        /// </summary>
         private Form1 form;
+
+        /// <summary>
+        /// A SpeechBot instance which responds to transfer voice command into text and transfer
+        /// text response into voice.
+        /// </summary>
         private SpeechBot speechBot = SpeechBotImpl.getInstance();
 
-        /*private void setForm(Form1 form) {
-            this.form = form;
-        }*/
-
+        /// <summary>
+        /// Create a singleton instance of Nancy.
+        /// </summary>
+        /// <param name="form">the form which this instance will interact with.</param>
         private Nancy(Form1 form) {
+            // set the corresponding form
             this.form = form;
+            // load event handler
+            speechBot.textReached += commandAnalyze;
         }
 
+        /// <summary>
+        /// Return a instance of VoiceControlAgent (Nancy).
+        /// </summary>
+        /// <param name="form">
+        /// the form which this instance of VoiceControlAgent will interact with
+        /// </param>
+        /// <returns> a instance of VoiceControlAgent (Nancy) </returns>
         public static VoiceControlAgent getInstance(Form1 form)
         {
             if (nancyInstance == null) { nancyInstance = new Nancy(form); }
             return nancyInstance;
         }
 
+        /// <summary>
+        /// <see cref="MedicineHelper:VoiceControlAgent.work()"/>
+        /// </summary>
         public void work()
         {
-            speechBot.textReached += commandAnalyze;
+            // call speechBot to start translate voice command.
             speechBot.voiceToText();
         }
 
+        /// <summary>
+        /// When receiving a textReached event, abstract the text command with highest confidence
+        /// and analyze it.
+        /// </summary>
+        /// <param name="sender"> the sender of the textReached event</param>
+        /// <param name="textArgs">the event arguments of a textReached event</param>
         public void commandAnalyze(object sender, TextReceiveEventArgs textArgs)
         {
             int state = 6;
@@ -239,33 +270,20 @@ namespace MedicineHelper
 
             }
 
-            /*input = new SpeechBotImpl();
-            input.textToVoice(response);
-            form.changeText(response); // CHANGE TEXT DEPENDING ON RESPONSE
-            form.displayPanel(state); // CHANGE PANEL DEPENDING ON RESPONSE
-            if (repeat == true)
-            {
-                Console.Write("repeat");
-                input = new SpeechBotImpl();
-                input.textReached += callBack;
-                input.voiceToText();
-            }*/
-
             speechBot.textToVoice(response);
             form.changeText(response);
             form.displayPanel(state);
-            if (repeat == true)
-            {
-                this.work();
-            }
-
             Console.Write(response);
+            if(repeat == true) this.work();
         }
 
-
-
-
-
+        /// <summary>
+        /// Compare a given commond with given list of keywords, return a list of keywords
+        /// which are included in the commond.
+        /// </summary>
+        /// <param name="keywords"> the list of keywords</param>
+        /// <param name="text"> the commond need to be parse </param>
+        /// <returns> a list of keywords which are included in the given commond</returns>
         public static List<string> Parse(List<string> keywords, string text)
         {
 
